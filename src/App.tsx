@@ -1,10 +1,25 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { api } from './infra'
+import ResponseData from './models/response-data'
+import { StyleSheet, Text, View } from 'react-native'
 
-export default function App() {
+const App: React.FC = () => {
+  const [data, setData] = useState([] as any)
+  useEffect(() => {
+    const onLoad = async (): Promise<void> => {
+      try {
+        const response = await api.get('epilist?key=52d6c330')
+        setData(response.data)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    onLoad()
+  }, [setData])
+
   return (
     <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
+      {data.map((v: ResponseData) => <Text>{v.name}</Text>)}
     </View>
   );
 }
@@ -17,3 +32,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+export default App

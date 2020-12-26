@@ -11,9 +11,6 @@
     "strict": true,
     "rootDir": "src",
     "baseUrl": "src",
-    "paths":{
-      "@/*": ["*"]
-    },
     "allowJs": true
   },
   "include": [
