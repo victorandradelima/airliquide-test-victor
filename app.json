@@ -1,0 +1,12 @@
+{
+  "name": "airliquide-test-victor",
+  "displayName": "airliquide-test-victor",
+  "expo": {
+    "name": "airliquide-test-victor",
+    "slug": "airliquide-test-victor",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
