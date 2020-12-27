@@ -38,6 +38,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-react": "^7.21.5",
+    "eslint-plugin-standard": "^5.0.0",
     "git-commit-msg-linter": "^3.0.0",
     "husky": "^4.3.6",
     "jest-expo": "~40.0.0",
@@ -47,5 +48,15 @@
   "jest": {
     "preset": "react-native"
   },
-  "private": true
+  "private": true,
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx}": [
+      "eslint 'src/**' --fix"
+    ]
+  }
 }

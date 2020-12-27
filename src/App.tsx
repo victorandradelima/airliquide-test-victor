@@ -1,13 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { SafeAreaView, StyleSheet, Text, View } from 'react-native'
-import CheckBox from '@react-native-community/checkbox'
+import React, { useEffect, useState } from 'react'
+import { SafeAreaView, StyleSheet, Text } from 'react-native'
 import { api } from './infra'
 import ResponseData from './models/response-data'
-import { Header } from 'react-native-elements';
+import { AppBar, Checklist } from './components'
 
 const App: React.FC = () => {
+  // Estado onde iremos armazenar nossa resposta no formato necessário para renderizar o checklist
   const [data, setData] = useState([] as any)
+
+  // Estado responsável para receber o erro e indicá-lo em caso positivo
   const [error, setError] = useState('')
+
+  // Hooks para carregar os dados da API
   useEffect(() => {
     // Este setData, serve para resetar o estado nos casos de hot reload.
     setData([])
@@ -30,42 +34,29 @@ const App: React.FC = () => {
     onLoad()
   }, [])
 
-  function valueChange(id: number | undefined) {
+  // funcão que irá atualizar o valor de cada checklist dentro da estrutura do estado "data"
+  function valueChange (id: number | undefined) {
     const newData = data.map((item: ResponseData) => {
       if (item.id === id) {
         const updatedItem = {
           ...item,
-          value: !item.value,
-        };
-        return updatedItem;
+          value: !item.value
+        }
+        return updatedItem
       }
-      return item;
-    });
-    setData(newData);
+      return item
+    })
+    setData(newData)
   }
 
   return (
     <>
-      <Header
-        centerComponent={{ text: 'EPI Checklist', style: { color: '#fff' } }}
-      />
+      <AppBar title="EPI Checklist" />
       <SafeAreaView style={styles.container}>
-        
-        {
-          !error ? data.map((v: ResponseData) => (
-            <View key={v.id} style={styles.checkboxContainer}>
-              <CheckBox
-                value={v.value}
-                onValueChange={() => valueChange(v.id)}
-                style={styles.checkbox}
-              />
-              <Text style={styles.label}>{v.label}</Text>
-            </View>
-            )) : <Text>Erro inexperado: {error}</Text>
-        }
+        {!error ? <Checklist data={data} valueChange={valueChange} /> : <Text>Erro inexperado: {error}</Text>}
       </SafeAreaView>
     </>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -73,20 +64,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
-  },
-  checkboxContainer: {
-    paddingHorizontal: 20,
-    flexDirection: "row",
-    alignSelf: "stretch",
-    marginBottom: 5
-  },
-  checkbox: {
-    alignSelf: "stretch"
-  },
-  label: {
-    margin: 8,
-  },
-});
+    justifyContent: 'center'
+  }
+})
 
 export default App
