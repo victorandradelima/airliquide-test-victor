@@ -1,5 +1,7 @@
 type ResponseData = {
-  name?: string
+  label?: string
+  value?: boolean
+  id?: number
 }
 
 export default ResponseData
