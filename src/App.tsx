@@ -3,6 +3,7 @@ import { SafeAreaView, StyleSheet, Text, View } from 'react-native'
 import CheckBox from '@react-native-community/checkbox'
 import { api } from './infra'
 import ResponseData from './models/response-data'
+import { Header } from 'react-native-elements';
 
 const App: React.FC = () => {
   const [data, setData] = useState([] as any)
@@ -44,20 +45,26 @@ const App: React.FC = () => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      {
-        !error ? data.map((v: ResponseData) => (
-          <View key={v.id} style={styles.checkboxContainer}>
-            <CheckBox
-              value={v.value}
-              onValueChange={() => valueChange(v.id)}
-              style={styles.checkbox}
-            />
-            <Text style={styles.label}>{v.label}</Text>
-          </View>
-          )) : <Text>Erro inexperado: {error}</Text>
-      }
-    </SafeAreaView>
+    <>
+      <Header
+        centerComponent={{ text: 'EPI Checklist', style: { color: '#fff' } }}
+      />
+      <SafeAreaView style={styles.container}>
+        
+        {
+          !error ? data.map((v: ResponseData) => (
+            <View key={v.id} style={styles.checkboxContainer}>
+              <CheckBox
+                value={v.value}
+                onValueChange={() => valueChange(v.id)}
+                style={styles.checkbox}
+              />
+              <Text style={styles.label}>{v.label}</Text>
+            </View>
+            )) : <Text>Erro inexperado: {error}</Text>
+        }
+      </SafeAreaView>
+    </>
   );
 }
 
