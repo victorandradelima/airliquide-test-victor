@@ -18,8 +18,8 @@ const ChecklistPage: React.FC = () => {
   // Função assíncrona que utiliza a API para receber os daddos
   const apiRequest = async () => {
     try {
-      // const response = await api.get('epilist?key=52d6c330')
-      const response = await api.get('names.json?key=b351b7e0')
+      const response = await api.get('epilist?key=52d6c330')
+      // const response = await api.get('names.json?key=b351b7e0') //API para testes
       response.data.map((item: any, index: number) => {
         setData((data: any[]) => data.concat({
           label: item.name,
