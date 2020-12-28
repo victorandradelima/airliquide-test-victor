@@ -25,6 +25,9 @@ const ChecklistPage: React.FC = () => {
 
   // Função assíncrona que utiliza a API para receber os daddos
   const apiRequest = async () => {
+    setData([] as ResponseData)
+    dispatch(updateEpiList([]))
+    setError('')
     try {
       // const response = await api.get('epilist?key=52d6c330')
       const response = await api.get('names.json?key=b351b7e0') // API para testes
@@ -40,21 +43,18 @@ const ChecklistPage: React.FC = () => {
     }
   }
 
-  // Hooks que monitora o estado local, para atualizar o estado global
-  useEffect(() => {
-    dispatch(updateEpiList(data))
-  }, [data])
-
   // Hook para carregar os dados da API ao iniciar a aplicação
   useEffect(() => {
-    setData([] as ResponseData)
-    dispatch(updateEpiList([]))
-    setError('')
     const onLoad = async (): Promise<void> => {
       await apiRequest()
     }
     onLoad()
   }, [])
+
+  // Hooks que monitora o estado local, para atualizar o estado global
+  useEffect(() => {
+    dispatch(updateEpiList(data))
+  }, [data])
 
   // Função para trocar a visibilidade do modal
   const confirmChecklist = () => {
@@ -63,9 +63,6 @@ const ChecklistPage: React.FC = () => {
 
   // Resetar checklist
   const resetChecklist = async () => {
-    setData([] as ResponseData)
-    dispatch(updateEpiList([]))
-    setError('')
     await apiRequest()
     confirmChecklist()
   }
