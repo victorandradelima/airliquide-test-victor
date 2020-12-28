@@ -29,8 +29,8 @@ const ChecklistPage: React.FC = () => {
     dispatch(updateEpiList([]))
     setError('')
     try {
-      // const response = await api.get('epilist?key=52d6c330')
-      const response = await api.get('names.json?key=b351b7e0') // API para testes
+      const response = await api.get('epilist?key=52d6c330')
+      // const response = await api.get('names.json?key=b351b7e0') // API para testes
       response.data.map((item: any, index: number) => {
         setData((data: ResponseData[]) => data.concat({
           label: item.name,
