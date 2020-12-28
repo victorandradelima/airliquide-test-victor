@@ -1,10 +1,10 @@
-import CheckBox from '@react-native-community/checkbox'
-import ResponseData from 'models/response-data'
 import React from 'react'
 import { View, Text, StyleSheet } from 'react-native'
+import CheckBox from '@react-native-community/checkbox'
+import { ResponseData } from 'models'
 
 const Checklist: React.FC<any> = (props: any) => {
-  return props.data.map((v: ResponseData) => (
+  return props.data ? props.data.map((v: ResponseData) => (
     <View key={v.id} style={styles.checkboxContainer}>
       <CheckBox
         value={v.value}
@@ -13,7 +13,7 @@ const Checklist: React.FC<any> = (props: any) => {
       />
       <Text style={styles.label}>{v.label}</Text>
     </View>
-  ))
+  )) : <></>
 }
 
 const styles = StyleSheet.create({

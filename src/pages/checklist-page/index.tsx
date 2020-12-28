@@ -1,13 +1,21 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native'
 import { Button, Overlay } from 'react-native-elements'
 import { api } from '../../infra'
-import { ResponseData } from '../../models'
+import { ResponseData } from 'models'
 import { AppBar, Checklist } from '../../components'
+import { useSelector, useDispatch } from 'react-redux'
+import { StoreState } from 'store/createStore'
+import { updateEpiList } from '../../store/modules/epi-checklist/actions'
 
 const ChecklistPage: React.FC = () => {
-  // Estado onde iremos armazenar nossa resposta no formato necessário para renderizar o checklist
-  const [data, setData] = useState([] as any)
+  // Chamadas do estado Global
+  const epiData = useSelector((state: StoreState) => state.epi.data)
+  const dispatch = useDispatch()
+
+  // Estado local para armazenar a response da API
+  const [data, setData] = useState([] as ResponseData | any)
 
   // Estado responsável para receber o erro e indicá-lo em caso positivo
   const [error, setError] = useState('')
@@ -18,10 +26,10 @@ const ChecklistPage: React.FC = () => {
   // Função assíncrona que utiliza a API para receber os daddos
   const apiRequest = async () => {
     try {
-      const response = await api.get('epilist?key=52d6c330')
-      // const response = await api.get('names.json?key=b351b7e0') //API para testes
+      // const response = await api.get('epilist?key=52d6c330')
+      const response = await api.get('names.json?key=b351b7e0') // API para testes
       response.data.map((item: any, index: number) => {
-        setData((data: any[]) => data.concat({
+        setData((data: ResponseData[]) => data.concat({
           label: item.name,
           value: false,
           id: index
@@ -32,9 +40,15 @@ const ChecklistPage: React.FC = () => {
     }
   }
 
+  // Hooks que monitora o estado local, para atualizar o estado global
+  useEffect(() => {
+    dispatch(updateEpiList(data))
+  }, [data])
+
   // Hook para carregar os dados da API ao iniciar a aplicação
   useEffect(() => {
-    setData([])
+    setData([] as ResponseData)
+    dispatch(updateEpiList([]))
     setError('')
     const onLoad = async (): Promise<void> => {
       await apiRequest()
@@ -49,7 +63,8 @@ const ChecklistPage: React.FC = () => {
 
   // Resetar checklist
   const resetChecklist = async () => {
-    setData([])
+    setData([] as ResponseData)
+    dispatch(updateEpiList([]))
     setError('')
     await apiRequest()
     confirmChecklist()
@@ -67,6 +82,7 @@ const ChecklistPage: React.FC = () => {
       }
       return item
     })
+    dispatch(updateEpiList(newData))
     setData(newData)
   }
 
@@ -77,7 +93,7 @@ const ChecklistPage: React.FC = () => {
         {!error
           ? <>
             <View style={styles.checklistArea} >
-              <Checklist data={data} valueChange={valueChange} />
+              <Checklist data={epiData} valueChange={valueChange} />
             </View>
             <Button onPress={confirmChecklist} title="Confimar checklist" type="outline"/>
           </>
@@ -88,7 +104,7 @@ const ChecklistPage: React.FC = () => {
           <Text style={styles.title} >Confirmação do checklist</Text>
           <View style={styles.checklistConfirmArea}>
             {
-              data.map((item: ResponseData, index: number) => {
+              epiData.map((item: ResponseData, index: number) => {
                 return <Text key={index}> {item.label}: {item.value ? 'Sim' : 'Não'} </Text>
               })
             }
