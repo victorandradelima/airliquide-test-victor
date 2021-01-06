@@ -7,54 +7,37 @@ import { ResponseData } from 'models'
 import { AppBar, Checklist } from '../../components'
 import { useSelector, useDispatch } from 'react-redux'
 import { StoreState } from 'store/createStore'
-import { updateEpiList } from '../../store/modules/epi-checklist/actions'
+import { updateEpiList, getEpiList } from '../../store/modules/epi-checklist/actions'
 
 const ChecklistPage: React.FC = () => {
   // Chamadas do estado Global
-  const epiData = useSelector((state: StoreState) => state.epi.data)
+  const { epiList, errorMessage } = useSelector((state: StoreState) => state.epi)
+
+  // Hooks do Redux para disparar actions
   const dispatch = useDispatch()
 
-  // Estado local para armazenar a response da API
-  const [data, setData] = useState([] as ResponseData | any)
-
-  // Estado responsável para receber o erro e indicá-lo em caso positivo
-  const [error, setError] = useState('')
+  const [dataEpiList, setDataEpiList] = useState([] as ResponseData | any)
 
   // Estado para controlar a visibilidade do Modal de confirmação
   const [visible, setVisible] = useState(false)
 
-  // Função assíncrona que utiliza a API para receber os daddos
-  const apiRequest = async () => {
-    setData([] as ResponseData)
-    dispatch(updateEpiList([]))
-    setError('')
-    try {
-      const response = await api.get('epilist?key=52d6c330')
-      // const response = await api.get('names.json?key=b351b7e0') // API para testes
-      response.data.map((item: any, index: number) => {
-        setData((data: ResponseData[]) => data.concat({
+  // Hook para carregar inicialmente a lista de epi
+  useEffect(() => {
+    dispatch(getEpiList())
+  }, [])
+
+  useEffect(() => {
+    if (epiList.length > 0) {
+      setDataEpiList([])
+      epiList.map((item: any, index: number) => {
+        setDataEpiList((data: ResponseData[]) => data.concat({
           label: item.name,
           value: false,
           id: index
         }))
       })
-    } catch (error) {
-      setError(error.message ?? 'Houve um erro inexperado')
     }
-  }
-
-  // Hook para carregar os dados da API ao iniciar a aplicação
-  useEffect(() => {
-    const onLoad = async (): Promise<void> => {
-      await apiRequest()
-    }
-    onLoad()
-  }, [])
-
-  // Hooks que monitora o estado local, para atualizar o estado global
-  useEffect(() => {
-    dispatch(updateEpiList(data))
-  }, [data])
+  }, [epiList])
 
   // Função para trocar a visibilidade do modal
   const confirmChecklist = () => {
@@ -63,13 +46,13 @@ const ChecklistPage: React.FC = () => {
 
   // Resetar checklist
   const resetChecklist = async () => {
-    await apiRequest()
+    dispatch(getEpiList())
     confirmChecklist()
   }
 
-  // funcão que irá atualizar o valor de cada checklist dentro da estrutura do estado "data"
+  // funcão que irá atualizar o valor de cada checklist
   function valueChange (id: number | undefined) {
-    const newData = data.map((item: ResponseData) => {
+    const newData = dataEpiList.map((item: ResponseData) => {
       if (item.id === id) {
         const updatedItem = {
           ...item,
@@ -80,28 +63,28 @@ const ChecklistPage: React.FC = () => {
       return item
     })
     dispatch(updateEpiList(newData))
-    setData(newData)
+    setDataEpiList(newData)
   }
 
   return (
     <>
       <AppBar title="EPI Checklist" />
       <SafeAreaView style={styles.container}>
-        {!error
+        {!errorMessage
           ? <>
             <View style={styles.checklistArea} >
-              <Checklist data={epiData} valueChange={valueChange} />
+              <Checklist data={dataEpiList} valueChange={valueChange} />
             </View>
             <Button onPress={confirmChecklist} title="Confimar checklist" type="outline"/>
           </>
-          : <Text>Erro inexperado: {error}</Text>}
+          : <Text>Erro inexperado: {errorMessage}</Text>}
       </SafeAreaView>
       <Overlay isVisible={visible} onBackdropPress={confirmChecklist}>
         <View>
           <Text style={styles.title} >Confirmação do checklist</Text>
           <View style={styles.checklistConfirmArea}>
             {
-              epiData.map((item: ResponseData, index: number) => {
+              dataEpiList.map((item: ResponseData, index: number) => {
                 return <Text key={index}> {item.label}: {item.value ? 'Sim' : 'Não'} </Text>
               })
             }

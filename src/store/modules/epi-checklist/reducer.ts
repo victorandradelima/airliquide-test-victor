@@ -1,7 +1,9 @@
 import { EpiAction, EpiState } from './types'
 
 const INITIAL_STATE: EpiState = {
-  data: []
+  data: [],
+  epiList: [],
+  errorMessage: ''
 }
 
 export default function epi (state = INITIAL_STATE, actions: EpiAction): EpiState {
@@ -10,6 +12,16 @@ export default function epi (state = INITIAL_STATE, actions: EpiAction): EpiStat
       return {
         ...state,
         data: actions.payload.data
+      }
+    case '@epi/SET_EPI_LIST':
+      return {
+        ...state,
+        epiList: actions.payload.epiList
+      }
+    case '@epi/SET_EPI_LIST_ERROR':
+      return {
+        ...state,
+        errorMessage: actions.payload.errorMessage
       }
     default:
       return state

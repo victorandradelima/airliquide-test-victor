@@ -6,4 +6,6 @@ export type EpiAction = ActionType<typeof actions>
 
 export interface EpiState {
   readonly data: ResponseData[]
+  readonly epiList: any[]
+  readonly errorMessage: string
 }
