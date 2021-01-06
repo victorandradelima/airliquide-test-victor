@@ -2,9 +2,8 @@
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView, StyleSheet, Text, View } from 'react-native'
 import { Button, Overlay } from 'react-native-elements'
-import { api } from '../../infra'
 import { ResponseData } from 'models'
-import { AppBar, Checklist } from '../../components'
+import { AppBar, Checklist, OverlayArea } from '../../components'
 import { useSelector, useDispatch } from 'react-redux'
 import { StoreState } from 'store/createStore'
 import { updateEpiList, getEpiList } from '../../store/modules/epi-checklist/actions'
@@ -16,6 +15,7 @@ const ChecklistPage: React.FC = () => {
   // Hooks do Redux para disparar actions
   const dispatch = useDispatch()
 
+  // Estado local para manipular o retorno do end-point no formato da checklist
   const [dataEpiList, setDataEpiList] = useState([] as ResponseData | any)
 
   // Estado para controlar a visibilidade do Modal de confirmação
@@ -26,6 +26,7 @@ const ChecklistPage: React.FC = () => {
     dispatch(getEpiList())
   }, [])
 
+  // Hook acionado sempre que o estado de retorno do end-point é atualizado para gerar a list no formato necessário do checklist
   useEffect(() => {
     if (epiList.length > 0) {
       setDataEpiList([])
@@ -79,19 +80,7 @@ const ChecklistPage: React.FC = () => {
           </>
           : <Text>Erro inexperado: {errorMessage}</Text>}
       </SafeAreaView>
-      <Overlay isVisible={visible} onBackdropPress={confirmChecklist}>
-        <View>
-          <Text style={styles.title} >Confirmação do checklist</Text>
-          <View style={styles.checklistConfirmArea}>
-            {
-              dataEpiList.map((item: ResponseData, index: number) => {
-                return <Text key={index}> {item.label}: {item.value ? 'Sim' : 'Não'} </Text>
-              })
-            }
-          </View>
-          <Button onPress={resetChecklist} title="Finalizar" type="solid"/>
-        </View>
-      </Overlay>
+      <OverlayArea isVisible={visible} onBackdropPress={confirmChecklist} dataList={dataEpiList} handleButton={resetChecklist} />
     </>
   )
 }
@@ -105,13 +94,6 @@ const styles = StyleSheet.create({
   checklistArea: {
     marginBottom: 24,
     marginTop: 24
-  },
-  title: {
-    fontSize: 18
-  },
-  checklistConfirmArea: {
-    marginBottom: 16,
-    marginTop: 16
   }
 })
 
